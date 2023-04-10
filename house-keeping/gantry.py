@@ -15,8 +15,6 @@ packing_strategy = {
 
 def main():
     output_commands = []
-    # Get the branch name of the active GitHub repository
-    branch = sys.argv[2].split('/')[-1]
 
     # Check if the resource manifest has been modified since the last time this script was run
     # If not then exit with error
@@ -31,7 +29,7 @@ def main():
     # Get S3 bucket name for the active GitHub repository and the contents of that bucket
     try:
         # CAVEAT : Will not error if the S3 bucket does not exist, will return same as empty bucket
-        cmd = f"aws s3api list-objects --bucket {bucket_name_root}-{branch} --output json > gantry.json"
+        cmd = f"aws s3api list-objects --bucket {bucket_name_root} --output json > gantry.json"
         os.system(cmd)
         output_commands.append(cmd)
         s3_bucket_ls = json.load(open('gantry.json'))['Contents']
@@ -49,7 +47,7 @@ def main():
                 # If the packed resource version is in S3 already, then ignore it, otherwise add it to S3
                 if packed_key not in list(map(lambda x: x['Key'], s3_bucket_ls)):
                     packing_strategy[resource['language']['name']](resource)
-                    cmd = f"aws s3api put-object --bucket {bucket_name_root}-{branch} --key {packed_key.replace('./','')} --body {packed_key.replace('./','')}"
+                    cmd = f"aws s3api put-object --bucket {bucket_name_root} --key {packed_key.replace('./','')} --body {packed_key.replace('./','')}"
                     os.system(cmd)
                     output_commands.append(cmd)
     # Return the commands that were run

@@ -7,37 +7,42 @@ permissions:
 on:
   push:
     branches:
-      - dev
-      - prod
-      - stage
-      - main
+      - production
   pull_request:
     branches:
-      - dev
-      - prod
-      - stage
+      - production
 
 jobs:
+  python_unit_testing:
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11] # pandas not below 3.8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load master requirements
+        run: |
+          pip install -r master-requirements.txt
+      # Run Python Tests
+      - name: Python Unit Tests
+        run: |
+          dirlen=$(echo ls ./tests | wc -l)
+          if [ ${dirlen} -gt 0 ]; then python -m unittest discover ./tests; fi
+
   sync-on-main:
     runs-on: ubuntu-latest
+    needs: python_unit_testing
     environment:
-      name: main
+      name: production
     steps:
-      - name: Get Dev Stage from pushed branch
+      - name: Get Branch Name
         run: |
-          upper_branch=$( echo ${GITHUB_REF^^})
           echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
-          echo "stage=$(echo ${upper_branch##*/})" >> $GITHUB_OUTPUT
         id: pushed_branch
 
-      - name: Chekout Pushed branch
+      - name: Checkout Pushed branch
         uses: actions/checkout@v3
         with:
           ref: ${{steps.pushed_branch.outputs.branch}}
-      
-      # - name: Print Pushed branch
-      #   run: |
-      #     echo ${{steps.pushed_branch.outputs.branch}}
       
       - name: Get Changed Files
         uses: jitterbit/get-changed-files@v1
@@ -52,11 +57,12 @@ jobs:
           role-to-assume: ${{secrets.AWS_S3_ARN}}
           role-duration-seconds: 900
           aws-region: us-west-2
+        
       - name: Setup Python
         if: ${{success()}}
-        run: ls
-      - name: Gantry Solve Versions and Builds
+        run: pip install -r master-requirements.txt
+
+      - name: Gantry Solve Versions and Build
         if: ${{success()}}
         run: |
-          pip install -r master-requirements.txt
-          python ./house-keeping/gantry.py ${{steps.delta.outputs.modified}} ${{steps.pushed_branch.outputs.branch}}
+          python ./house-keeping/gantry.py ${{steps.delta.outputs.modified}}
