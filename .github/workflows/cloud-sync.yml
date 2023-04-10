@@ -10,6 +10,7 @@ on:
       - dev
       - prod
       - stage
+      - main
   pull_request:
     branches:
       - dev
