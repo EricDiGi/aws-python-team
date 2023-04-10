@@ -42,7 +42,7 @@ def main():
     aws_resources = list(manifest.keys())
     for rsc in aws_resources: 
         # If the resource nodes needs to be packaged for deployment, then pack it
-        if manifest[rsc]['build_to_deploy']:
+        if 'build_to_deploy' in list(manifest[rsc].keys()) and manifest[rsc]['build_to_deploy']:
             for num,resource in enumerate(manifest[rsc]['resources']):
                 # Produce the filepath for the resource
                 packed_key = packing_strategy[resource['language']['name']](resource,True)
@@ -54,8 +54,6 @@ def main():
                     output_commands.append(cmd)
     # Return the commands that were run
     return '\n'.join(output_commands)
-
-
 
 if __name__ == "__main__":
     print(main())
