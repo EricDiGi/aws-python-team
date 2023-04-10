@@ -52,7 +52,10 @@ jobs:
           role-to-assume: ${{secrets.AWS_S3_ARN}}
           role-duration-seconds: 900
           aws-region: us-west-2
-
+      - name: Setup Python
+        if: ${{success()}}
+        run: |
+          ls
       - name: Gantry Solve Versions and Builds
         if: ${{success()}}
         run: |
