@@ -1,7 +1,7 @@
 {
   "Config" : {
     "S3": {
-      "bucket-name-root": "demo-bucket"
+      "bucket": "demo-bucket"
     }
   },
   "Lambda": {
