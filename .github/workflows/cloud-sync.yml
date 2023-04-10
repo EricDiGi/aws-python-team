@@ -18,8 +18,10 @@ on:
       - stage
 
 jobs:
-  sync:
+  sync-on-main:
     runs-on: ubuntu-latest
+    environment:
+      name: main
     steps:
       # - name: Get Dev Stage from pushed branch
       #   run: |
@@ -45,8 +47,6 @@ jobs:
       
       - name: Setup AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
-        env:
-          STAGE: ${{steps.pushed_branch.outputs.stage}}
         with:
         # ARN by stage
           role-to-assume: ${{secrets.AWS_S3_ARN}}
