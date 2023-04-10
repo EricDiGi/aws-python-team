@@ -55,7 +55,7 @@ jobs:
       - name: Setup Python
         if: ${{success()}}
         run: |
-          ls
+          echo $(ls)
       - name: Gantry Solve Versions and Builds
         if: ${{success()}}
         run: |
