@@ -16,7 +16,7 @@
         },
         "S3": {
           "feature-group": "demo-feature/lambdas",
-          "version": "0"
+          "version": "0-0-0"
         }
       }
     ]

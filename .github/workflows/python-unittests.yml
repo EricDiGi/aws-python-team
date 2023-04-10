@@ -21,4 +21,5 @@ jobs:
       # Run Python Tests
       - name: Python Unit Tests
         run: |
-          python -m unittest discover ./tests
+          dirlen=$(echo ls | wc -l)
+          if [ ${dirlen} -gt 0 ]; then python -m unittest discover ./tests; fi
