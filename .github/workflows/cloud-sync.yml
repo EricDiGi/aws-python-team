@@ -1,0 +1,59 @@
+name: Sync Versions to S3
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  push:
+    branches:
+      - dev
+      - prod
+      - stage
+  pull_request:
+    branches:
+      - dev
+      - prod
+      - stage
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Dev Stage from pushed branch
+        run: |
+          upper_branch=$( echo ${GITHUB_REF^^})
+          echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
+          echo "stage=$(echo ${upper_branch##*/})" >> $GITHUB_OUTPUT
+        id: pushed_branch
+
+      - name: Chekout Pushed branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{steps.pushed_branch.outputs.branch}}
+      
+      - name: Print Pushed branch
+        run: |
+          echo ${{steps.pushed_branch.outputs.branch}}
+      
+      - name: Get Changed Files
+        uses: jitterbit/get-changed-files@v1
+        with:
+          format: json
+        id: delta
+      
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        env:
+          STAGE: ${{steps.pushed_branch.outputs.stage}}
+        with:
+        # ARN by stage
+          role-to-assume: ${{secrets[format('AWS_S3_ARN_{0}', env.STAGE)]}}
+          role-duration-seconds: 900
+          aws-region: us-west-2
+
+      - name: Gantry Solve Versions and Builds
+        if: ${{success()}}
+        run: |
+          pip install -r master-requirements.txt
+          python ./house-keeping/gantry.py ${{steps.delta.outputs.modified}} ${{steps.pushed_branch.outputs.branch}}

@@ -1,0 +1,24 @@
+{
+  "Config" : {
+    "S3": {
+      "bucket-name-root": "demo-bucket"
+    }
+  },
+  "Lambda": {
+    "build_to_deploy": true,
+    "resources": [
+      {
+        "path": "./projects/demo-project/lambdas/lambda1",
+        "name": "lambda1",
+        "language": {
+          "name": "Python",
+          "version": "3.8"
+        },
+        "S3": {
+          "feature-group": "demo-feature/lambdas",
+          "version": "0"
+        }
+      }
+    ]
+  }
+}
