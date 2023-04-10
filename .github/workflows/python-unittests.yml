@@ -12,9 +12,16 @@ jobs:
         python-version: [3.8, 3.9, 3.10, 3.11] # pandas not below 3.8
     runs-on: ubuntu-latest
     steps:
-      # - name: Checkout Main
-      #   uses: actions/checkout@v2
-      # Load master requirements.txt
+      - name: Get Branch Name
+        run: |
+          echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
+        id: pushed_branch
+
+      - name: Checkout Pushed branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{steps.pushed_branch.outputs.branch}}
+      
       - name: Load master requirements
         run: |
           pip install -r master-requirements.txt
