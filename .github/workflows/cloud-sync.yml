@@ -23,17 +23,17 @@ jobs:
     environment:
       name: main
     steps:
-      # - name: Get Dev Stage from pushed branch
-      #   run: |
-      #     upper_branch=$( echo ${GITHUB_REF^^})
-      #     echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
-      #     echo "stage=$(echo ${upper_branch##*/})" >> $GITHUB_OUTPUT
-      #   id: pushed_branch
+      - name: Get Dev Stage from pushed branch
+        run: |
+          upper_branch=$( echo ${GITHUB_REF^^})
+          echo "branch=$(echo ${GITHUB_REF##*/})" >> $GITHUB_OUTPUT
+          echo "stage=$(echo ${upper_branch##*/})" >> $GITHUB_OUTPUT
+        id: pushed_branch
 
-      # - name: Chekout Pushed branch
-      #   uses: actions/checkout@v3
-      #   with:
-      #     ref: ${{steps.pushed_branch.outputs.branch}}
+      - name: Chekout Pushed branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{steps.pushed_branch.outputs.branch}}
       
       # - name: Print Pushed branch
       #   run: |
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Python
         if: ${{success()}}
         run: |
-          ls
+          echo $(ls)
       - name: Gantry Solve Versions and Builds
         if: ${{success()}}
         run: |
