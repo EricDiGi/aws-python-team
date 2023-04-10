@@ -54,8 +54,7 @@ jobs:
           aws-region: us-west-2
       - name: Setup Python
         if: ${{success()}}
-        run: |
-          echo $(ls)
+        run: echo $(ls)
       - name: Gantry Solve Versions and Builds
         if: ${{success()}}
         run: |
