@@ -15,7 +15,6 @@
           "version": "3.8"
         },
         "S3": {
-          "feature-group": "demo-feature/lambdas",
           "version": "0-0-0"
         }
       }
